@@ -36,10 +36,13 @@ jobs:
            '${VAULT_ADDR}/v1/auth/approle/role/aws/secret-id' | jq -r '.data.secret_id')' >> $BASH_ENV
 
            source $BASH_ENV
-           echo "{" > workspace/ids-output.json
-           echo "  \"secret_id\": \"${SECRET_ID}\"," >> workspace/ids-output.json
-           echo "  \"role_id\": \"${ROLE_ID}"\" >> workspace/ids-output.json
-           echo "}" >> workspace/ids-output.json
+
+           cat << EOF > ids-output.json
+           {
+              \"secret_id\": \"${SECRET_ID}\",
+              \"role_id\": \"${ROLE_ID}"\
+           }
+           EOF
 
            cat workspace/ids-output.json
       - persist_to_workspace:
