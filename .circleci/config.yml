@@ -76,6 +76,22 @@ jobs:
  
            curl \
              --header "X-Vault-Token: ${VAULT_TOKEN}" \
-             ${VAULT_ADDR}/v1/aws/creds/tf-demo-role | jq
- 
+             ${VAULT_ADDR}/v1/aws/creds/tf-demo-role | jq -r '.data | .access_key, .secret_key' > workspace/tmp
+
+           cat tmp | head -n 1 | awk '{print "ACCESS_KEY=" $1}' > key
+           cat tmp | tail -n 1 | awk '{print "SECRET_KEY=" $1}' >> key
+
+           rm tmp
            rm /tmp/workspace/vtoken
+      - persist_to_workspace:
+          root: workspace
+          paths:
+            - key
+  create-web:
+    executor: my-executor
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+      - run:
+         command: |
+           cat workspace/key
