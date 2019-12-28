@@ -81,7 +81,9 @@ jobs:
            cat workspace/tmp | head -n 1 | awk '{print "ACCESS_KEY=" $1}' > key
            cat workspace/tmp | tail -n 1 | awk '{print "SECRET_KEY=" $1}' >> key
 
-           rm tmp
+           cat key 
+
+           rm /tmp/workspace/tmp
            rm /tmp/workspace/vtoken
       - persist_to_workspace:
           root: workspace
