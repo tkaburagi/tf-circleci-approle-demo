@@ -31,15 +31,15 @@ jobs:
 
            source $BASH_ENV
            echo "{" > workspace/ids-output.json
-           echo "  "secret_id": $SECRET_ID" >> workspace/ids-output.json
-           echo "  "role_id": $ROLE_ID" >> workspace/ids-output.json
+           echo "  \"secret_id\": $SECRET_ID" >> workspace/ids-output.json
+           echo "  \"role_id\": $ROLE_ID" >> workspace/ids-output.json
            echo "}" >> workspace/ids-output.json
 
            cat workspace/ids-output.json
       - persist_to_workspace:
           root: workspace
           paths:
-            - ids-output
+            - ids-output.json
   get-cloud-key:
     executor: my-executor
     steps:
@@ -52,7 +52,7 @@ jobs:
            curl \
             --request POST \
             --data @ids-output.json \
-            ${VAULT_ADDR}/v1/auth/approle/login
+            ${VAULT_ADDR}/v1/auth/approle/login | jq
 
            rm /tmp/workspace/ids-output
 
