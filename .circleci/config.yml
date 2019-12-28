@@ -26,7 +26,7 @@ jobs:
            'https://cf-vault-kabu.cfapps.io/v1/auth/approle/role/aws/secret-id' | jq -r '.data.secret_id')' >> $BASH_ENV
 
            source $BASH_ENV
-
+           echo "SECRET ID is "$SECRET_ID
   get-cloud-key:
     docker:
       - image: circleci/node:4.8.2
