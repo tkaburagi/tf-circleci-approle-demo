@@ -6,6 +6,9 @@ workflows:
       - generate-vault-token:
           requires:
             - pull-approle-ids
+      - get-aws-key:
+          requires:
+            generate-vault-token
 version: 2.1
 executors:
   my-executor:
