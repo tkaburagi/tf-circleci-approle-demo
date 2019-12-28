@@ -1,12 +1,12 @@
 workflows:
-  version: 2
+  version: 2.1
   my-workflow:
     jobs:
       - pull-ids
       - get-cloud-key:
           requires:
             - pull-ids
-version: 2
+version: 2.1
 executors:
   my-executor:
     docker:
