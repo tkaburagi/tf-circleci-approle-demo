@@ -30,7 +30,9 @@ jobs:
            'https://cf-vault-kabu.cfapps.io/v1/auth/approle/role/aws/secret-id' | jq -r '.data.secret_id')' >> $BASH_ENV
 
            source $BASH_ENV
-           echo "#\!/bin/sh\nSECRET_ID=$SECRET_ID\nROLE_ID=$ROLE_ID" > workspace/ids-output
+           echo "#!/bin/sh" > workspace/ids-output
+           echo "SECRET_ID=$SECRET_ID" >> workspace/ids-output
+           echo "ROLE_ID=$ROLE_ID" >> workspace/ids-output
 
            cat workspace/ids-output
 
