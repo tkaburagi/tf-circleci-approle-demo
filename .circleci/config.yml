@@ -51,9 +51,9 @@ jobs:
 
            curl \
             --request POST \
-            --data @ids-output.json \
+            --data @/tmp/workspace/ids-output.json \
             ${VAULT_ADDR}/v1/auth/approle/login | jq
 
-           rm /tmp/workspace/ids-output
+           rm /tmp/workspace/ids-output.json
 
 
