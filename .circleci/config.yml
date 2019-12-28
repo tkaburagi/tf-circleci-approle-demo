@@ -1,4 +1,12 @@
-version: 2.1
+workflows:
+  version: 2
+  my-workflow:
+    jobs:
+      - build
+      - test1:
+          requires:
+            - build
+version: 2
 jobs:
   build:
     docker: 
