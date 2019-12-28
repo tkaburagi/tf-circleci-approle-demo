@@ -16,7 +16,6 @@ jobs:
   pull-ids:
     executor: my-executor
     steps:
-      - checkout
       - run: mkdir -p workspace
       - run: 
          command: |
