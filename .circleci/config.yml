@@ -7,12 +7,17 @@ workflows:
           requires:
             - pull-ids
 version: 2
+executors:
+  my-executor:
+    docker:
+      - image: circleci/node:4.8.2
+    working_directory: /tmp
 jobs:
   pull-ids:
-    docker: 
-      - image: circleci/node:4.8.2
+    executor: my-executor
     steps:
       - checkout
+      - run: mkdir -p workspace
       - run: 
          command: |
            echo 'export ROLE_ID=$(curl \
@@ -26,12 +31,17 @@ jobs:
            'https://cf-vault-kabu.cfapps.io/v1/auth/approle/role/aws/secret-id' | jq -r '.data.secret_id')' >> $BASH_ENV
 
            source $BASH_ENV
-           echo "SECRET ID is "$SECRET_ID
+           echo "SECRET_ID=$SECRET_ID" > workspace/ids-output
+
+           cat workspace/ids-output
+
+      - persist_to_workspace:
+          root: workspace
+          paths:
+            - ids-output
   get-cloud-key:
-    docker:
-      - image: circleci/node:4.8.2
+    executor: my-executor
     steps:
       - run:
          command: |
-           source $BASH_ENV
            echo "SECRET ID is "$SECRET_ID
