@@ -2,10 +2,10 @@ workflows:
   version: 2.1
   my-workflow:
     jobs:
-      - pull-ids
-      - get-cloud-key:
+      - pull-approle-ids
+      - generate-vault-token:
           requires:
-            - pull-ids
+            - pull-approle-ids
 version: 2.1
 executors:
   my-executor:
@@ -13,7 +13,7 @@ executors:
       - image: circleci/node:4.8.2
     working_directory: /tmp
 jobs:
-  pull-ids:
+  pull-approle-ids:
     executor: my-executor
     steps:
       - run: mkdir -p workspace
