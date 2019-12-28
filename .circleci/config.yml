@@ -22,19 +22,20 @@ jobs:
            echo 'export ROLE_ID=$(curl \
            --header "X-Vault-Token: ${VAULT_INIT_TOKEN}" \
            --request GET \
-           'https://cf-vault-kabu.cfapps.io/v1/auth/approle/role/aws/role-id' | jq -r '.data.role_id')' >> $BASH_ENV
+           '${VAULT_ADDR}/v1/auth/approle/role/aws/role-id' | jq -r '.data.role_id')' >> $BASH_ENV
 
            echo 'export SECRET_ID=$(curl \
            --header "X-Vault-Token: ${VAULT_INIT_TOKEN}" \
            --request POST \
-           'https://cf-vault-kabu.cfapps.io/v1/auth/approle/role/aws/secret-id' | jq -r '.data.secret_id')' >> $BASH_ENV
+           '${VAULT_ADDR}/v1/auth/approle/role/aws/secret-id' | jq -r '.data.secret_id')' >> $BASH_ENV
 
            source $BASH_ENV
-           echo "#!/bin/sh" > workspace/ids-output
-           echo "SECRET_ID=$SECRET_ID" >> workspace/ids-output
-           echo "ROLE_ID=$ROLE_ID" >> workspace/ids-output
-           
-           cat workspace/ids-output
+           echo "{" > workspace/ids-output.json
+           echo "  "secret_id": $SECRET_ID" >> workspace/ids-output.json
+           echo "  "role_id": $ROLE_ID" >> workspace/ids-output.json
+           echo "}" >> workspace/ids-output.json
+
+           cat workspace/ids-output.json
       - persist_to_workspace:
           root: workspace
           paths:
@@ -46,4 +47,13 @@ jobs:
           at: /tmp/workspace
       - run:
          command: |
-           cat /tmp/workspace/ids-output
+           cat /tmp/workspace/ids-output.json
+
+           curl \
+            --request POST \
+            --data @ids-output.json \
+            ${VAULT_ADDR}/v1/auth/approle/login
+
+           rm /tmp/workspace/ids-output
+
+
