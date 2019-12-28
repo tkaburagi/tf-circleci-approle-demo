@@ -19,17 +19,16 @@ jobs:
       - run: mkdir -p workspace
       - run: 
          command: |
-           echo 'export ROLE_ID=$(curl \
+           export ROLE_ID=$(curl \
            --header "X-Vault-Token: ${VAULT_INIT_TOKEN}" \
            --request GET \
-           '${VAULT_ADDR}/v1/auth/approle/role/aws/role-id' | jq -r '.data.role_id')' >> $BASH_ENV
+           '${VAULT_ADDR}/v1/auth/approle/role/aws/role-id' | jq -r '.data.role_id')
 
-           echo 'export SECRET_ID=$(curl \
+           export SECRET_ID=$(curl \
            --header "X-Vault-Token: ${VAULT_INIT_TOKEN}" \
            --request POST \
-           '${VAULT_ADDR}/v1/auth/approle/role/aws/secret-id' | jq -r '.data.secret_id')' >> $BASH_ENV
+           '${VAULT_ADDR}/v1/auth/approle/role/aws/secret-id' | jq -r '.data.secret_id')
 
-           source $BASH_ENV
            echo "{" > workspace/ids-output.json
            echo "  \"secret_id\": \"${SECRET_ID}\"," >> workspace/ids-output.json
            echo "  \"role_id\": \"${ROLE_ID}"\" >> workspace/ids-output.json
@@ -49,11 +48,30 @@ jobs:
          command: |
            cat /tmp/workspace/ids-output.json
 
-           curl \
+           export VAULT_TOKEN=$(curl \
             --request POST \
             --data @/tmp/workspace/ids-output.json \
-            ${VAULT_ADDR}/v1/auth/approle/login | jq
+            ${VAULT_ADDR}/v1/auth/approle/login | jq -r '.auth.client_token')
 
            rm /tmp/workspace/ids-output.json
 
+           echo "VAULT_TOKEN=${VAULT_TOKEN}" > workspace/vtoken
+      - persist_to_workspace:
+          root: workspace
+          paths:
+            - vtoken
+  get-aws-key:
+    executor: my-executor
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+      -run:
+        command: |
+          source workspace/vtoken
+          echo ${VAULT_TOKEN}
 
+          curl \
+            --header "X-Vault-Token: ${VAULT_TOKEN}" \
+            http://127.0.0.1:8200/v1/aws/creds/tf-demo-role | jq
+
+          rm /tmp/workspace/vtoken
