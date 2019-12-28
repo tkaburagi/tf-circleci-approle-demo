@@ -31,8 +31,8 @@ jobs:
 
            source $BASH_ENV
            echo "{" > workspace/ids-output.json
-           echo "  \"secret_id\": \"$SECRET_ID"\," >> workspace/ids-output.json
-           echo "  \"role_id\": \"$ROLE_ID"\" >> workspace/ids-output.json
+           echo "  \"secret_id\": \"${SECRET_ID}\"," >> workspace/ids-output.json
+           echo "  \"role_id\": \"${ROLE_ID}"\" >> workspace/ids-output.json
            echo "}" >> workspace/ids-output.json
 
            cat workspace/ids-output.json
