@@ -40,7 +40,7 @@ jobs:
           root: workspace
           paths:
             - ids-output.json
-  get-vault-token:
+  generate-vault-token:
     executor: my-executor
     steps:
       - attach_workspace:
