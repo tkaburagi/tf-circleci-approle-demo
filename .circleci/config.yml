@@ -1,5 +1,5 @@
 workflows:
-  version: 2
+  version: 2.1
   my-workflow:
     jobs:
       - pull-approle-ids
@@ -22,16 +22,17 @@ jobs:
       - run: mkdir -p workspace
       - run: 
          command: |
-           export ROLE_ID=$(curl \
+           echo 'export ROLE_ID=$(curl \
            --header "X-Vault-Token: ${VAULT_INIT_TOKEN}" \
            --request GET \
-           '${VAULT_ADDR}/v1/auth/approle/role/aws/role-id' | jq -r '.data.role_id')
+           '${VAULT_ADDR}/v1/auth/approle/role/aws/role-id' | jq -r '.data.role_id')' >> $BASH_ENV
 
-           export SECRET_ID=$(curl \
+           echo 'export SECRET_ID=$(curl \
            --header "X-Vault-Token: ${VAULT_INIT_TOKEN}" \
            --request POST \
-           '${VAULT_ADDR}/v1/auth/approle/role/aws/secret-id' | jq -r '.data.secret_id')
+           '${VAULT_ADDR}/v1/auth/approle/role/aws/secret-id' | jq -r '.data.secret_id')' >> $BASH_ENV
 
+           source $BASH_ENV
            echo "{" > workspace/ids-output.json
            echo "  \"secret_id\": \"${SECRET_ID}\"," >> workspace/ids-output.json
            echo "  \"role_id\": \"${ROLE_ID}"\" >> workspace/ids-output.json
