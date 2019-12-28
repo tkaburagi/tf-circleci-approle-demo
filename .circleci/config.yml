@@ -78,10 +78,10 @@ jobs:
              --header "X-Vault-Token: ${VAULT_TOKEN}" \
              ${VAULT_ADDR}/v1/aws/creds/tf-demo-role | jq -r '.data | .access_key, .secret_key' > workspace/tmp
 
-           cat workspace/tmp | head -n 1 | awk '{print "ACCESS_KEY=" $1}' > key
-           cat workspace/tmp | tail -n 1 | awk '{print "SECRET_KEY=" $1}' >> key
+           cat workspace/tmp | head -n 1 | awk '{print "ACCESS_KEY=" $1}' > workspace/key
+           cat workspace/tmp | tail -n 1 | awk '{print "SECRET_KEY=" $1}' >> workspace/key
 
-           cat key 
+           cat workspace/key 
 
            rm /tmp/workspace/tmp
            rm /tmp/workspace/vtoken
