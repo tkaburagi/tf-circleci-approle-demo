@@ -2,15 +2,35 @@ workflows:
   version: 2
   my-workflow:
     jobs:
-      - build
-      - test1:
+      - pull-ids
+      - get-cloud-key:
           requires:
-            - build
+            - pull-ids
 version: 2
 jobs:
-  build:
+  pull-ids:
     docker: 
-      - image: circleci/node:4.8.2 # the primary container, where your job's commands are run
+      - image: circleci/node:4.8.2
     steps:
-      - checkout # check out the code in the project directory
-      - run: echo "hello world" # run the  command
+      - checkout
+      - run: 
+         command: |
+           echo 'export ROLE_ID=$(curl \
+           --header "X-Vault-Token: s.VGs0wmV4ZkZ6bBcQfJQxIlW2" \
+           --request GET \
+           'https://cf-vault-kabu.cfapps.io/v1/auth/approle/role/aws/role-id' | jq -r '.data.role_id')' >> $BASH_ENV
+
+           echo 'export SECRET_ID=$(curl \
+           --header "X-Vault-Token: s.VGs0wmV4ZkZ6bBcQfJQxIlW2" \
+           --request POST \
+           'https://cf-vault-kabu.cfapps.io/v1/auth/approle/role/aws/secret-id' | jq -r '.data.secret_id')' >> $BASH_ENV
+
+           source $BASH_ENV
+
+  get-cloud-key:
+    docker:
+      - image: circleci/node:4.8.2
+    steps:
+      - run:
+         command: |
+           echo "SECRET ID is "$SECRET_ID
