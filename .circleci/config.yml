@@ -1,5 +1,5 @@
 workflows:
-  version: 2.1
+  version: 2
   my-workflow:
     jobs:
       - pull-approle-ids
@@ -8,7 +8,7 @@ workflows:
             - pull-approle-ids
       - get-aws-key:
           requires:
-            generate-vault-token
+            - generate-vault-token
 version: 2.1
 executors:
   my-executor:
@@ -69,12 +69,12 @@ jobs:
       - attach_workspace:
           at: /tmp/workspace
       - run:
-        command: |
-          source workspace/vtoken
-          echo ${VAULT_TOKEN}
-
-          curl \
-            --header "X-Vault-Token: ${VAULT_TOKEN}" \
-            http://127.0.0.1:8200/v1/aws/creds/tf-demo-role | jq
-
-          rm /tmp/workspace/vtoken
+         command: |
+           source workspace/vtoken
+           echo ${VAULT_TOKEN}
+ 
+           curl \
+             --header "X-Vault-Token: ${VAULT_TOKEN}" \
+             ${VAULT_ADDR}/v1/aws/creds/tf-demo-role | jq
+ 
+           rm /tmp/workspace/vtoken
