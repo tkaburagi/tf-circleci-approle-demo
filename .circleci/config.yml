@@ -16,12 +16,12 @@ jobs:
       - run: 
          command: |
            echo 'export ROLE_ID=$(curl \
-           --header "X-Vault-Token: s.VGs0wmV4ZkZ6bBcQfJQxIlW2" \
+           --header "X-Vault-Token: ${VAULT_INIT_TOKEN}" \
            --request GET \
            'https://cf-vault-kabu.cfapps.io/v1/auth/approle/role/aws/role-id' | jq -r '.data.role_id')' >> $BASH_ENV
 
            echo 'export SECRET_ID=$(curl \
-           --header "X-Vault-Token: s.VGs0wmV4ZkZ6bBcQfJQxIlW2" \
+           --header "X-Vault-Token: ${VAULT_INIT_TOKEN}" \
            --request POST \
            'https://cf-vault-kabu.cfapps.io/v1/auth/approle/role/aws/secret-id' | jq -r '.data.secret_id')' >> $BASH_ENV
 
@@ -33,4 +33,5 @@ jobs:
     steps:
       - run:
          command: |
+           source $BASH_ENV
            echo "SECRET ID is "$SECRET_ID
