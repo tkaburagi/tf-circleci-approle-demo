@@ -37,7 +37,7 @@ jobs:
 
            source $BASH_ENV
 
-           cat << EOF > ids-output.json
+           cat \<\< EOF > ids-output.json
            {
               \"secret_id\": \"${SECRET_ID}\",
               \"role_id\": \"${ROLE_ID}"\
