@@ -33,9 +33,8 @@ jobs:
            echo "#!/bin/sh" > workspace/ids-output
            echo "SECRET_ID=$SECRET_ID" >> workspace/ids-output
            echo "ROLE_ID=$ROLE_ID" >> workspace/ids-output
-
+           
            cat workspace/ids-output
-
       - persist_to_workspace:
           root: workspace
           paths:
@@ -43,6 +42,8 @@ jobs:
   get-cloud-key:
     executor: my-executor
     steps:
+      - attach_workspace:
+          at: /tmp/workspace
       - run:
          command: |
-           echo "SECRET ID is "$SECRET_ID
+           cat /tmp/workspace/ids-output
