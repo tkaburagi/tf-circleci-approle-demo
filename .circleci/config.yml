@@ -67,6 +67,12 @@ jobs:
           root: workspace
           paths:
             - vtoken
+  slack-notifiacatoin:
+    executor: my-executor
+    steps:
+      -run:
+        command: |
+          ls
   get-aws-key:
     executor: my-executor
     steps:
@@ -93,6 +99,7 @@ jobs:
   create-web:
     executor: my-executor
     steps:
+      - checkout
       - attach_workspace:
           at: /tmp/workspace
       - run:
