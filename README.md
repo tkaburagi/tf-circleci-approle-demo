@@ -4,6 +4,11 @@ This is a demo for showing deployin AWS resources with Circle CI and Vault. Vaul
 
 In the CircleCI pileline, Vault uses AppRole authentication(pull mode) to generate Vault token. This alos enable users to hide Vault Token in the pipeline configuration file. 
 
+<kbd>
+  <img src="https://blog-kabuctl-run.s3-ap-northeast-1.amazonaws.com/20191229/pipeline.png">
+</kbd>
+
+
 ## Preparations
 
 1. Create Circle CI account and connect GitHub repositories which is forked from here.
