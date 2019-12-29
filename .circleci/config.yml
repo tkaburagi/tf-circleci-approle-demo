@@ -116,7 +116,7 @@ jobs:
       - run:
          name: "Set AWS Key in the Variables Storage"
          command: |
-           source workspace/key
+           source /tmp/workspace/key
            sed -i -e 's/WS_ID_REPLACE/${TF_WORKSPACE_ID}/g' var-template.json
            sed 's/KEY_REPLACE/access_key/g' var-template.json > access_key.json
            sed 's/KEY_REPLACE/secret_key/g' var-template.json > secret_key.json
