@@ -6,15 +6,18 @@ workflows:
       - generate-vault-token:
           requires:
             - pull-approle-ids
-      - slack-notifiacatoin:
+      - slack-notifiacatoin-revoking:
           requires:
             - pull-approle-ids
       - get-aws-key:
           requires:
             - generate-vault-token
-      - create-web:
+      - plan-web:
           requires:
             - get-aws-key
+      - slack-notifiacatoin-terraform:
+          requires:
+            - plan-web
 version: 2.1
 executors:
   my-executor:
@@ -70,7 +73,7 @@ jobs:
           root: workspace
           paths:
             - vtoken
-  slack-notifiacatoin:
+  slack-notifiacatoin-revoking:
     executor: my-executor
     steps:
       - run:
@@ -99,7 +102,7 @@ jobs:
           root: workspace
           paths:
             - key
-  create-web:
+  plan-web:
     docker:
       - image: circleci/node:4.8.2
     steps:
@@ -109,4 +112,32 @@ jobs:
       - run:
          command: |
            ls -ltrR
-           rm /tmp/workspace/key
+           tar -zcvf tf.tar.gz -C . main.tf output.tf variables.tf
+
+           echo '{"data":{"type":"configuration-version"}}' > ./create_config_version.json
+
+           UPLOAD_URL=($(curl \
+             --header "Authorization: Bearer ${TF_TOKEN}" \
+             --header "Content-Type: application/vnd.api+json" \
+             --request POST \
+             --data @create_config_version.json \
+             https://app.terraform.io/api/v2/workspaces/${TF_WORKSPACE_ID}/configuration-versions \
+             | jq -r '.data.attributes."upload-url"'))
+
+           curl \
+             --header "Content-Type: application/octet-stream" \
+             --request PUT \
+             --data-binary @tf.tar.gz \
+             $UPLOAD_URL
+
+           rm ./create_config_version.json
+           rm ./tf.tar.gz
+      - run:
+         command: |
+           pwd
+  slack-notifiacatoin-terraform:
+    executor: my-executor
+    steps:
+      - run:
+         command: |
+           ls
