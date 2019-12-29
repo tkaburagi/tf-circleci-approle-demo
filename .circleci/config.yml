@@ -124,6 +124,9 @@ jobs:
            sed -i -e 's/VALUE_REPLACE/${ACCESS_KEY}/g' access_key.json
            sed -i -e 's/VALUE_REPLACE/${SECRET_KEY}/g' secret_key.json
 
+           cat access_key.json
+           cat secret_key.json
+
            curl \
               --header "Authorization: Bearer ${TF_TOKEN}" \
               --header "Content-Type: application/vnd.api+json" \
