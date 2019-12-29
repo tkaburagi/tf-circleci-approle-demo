@@ -100,7 +100,8 @@ jobs:
           paths:
             - key
   create-web:
-    executor: my-executor
+    docker:
+      - image: circleci/node:4.8.2
     steps:
       - checkout
       - attach_workspace:
@@ -108,4 +109,4 @@ jobs:
       - run:
          command: |
            ls -ltrR
-           rm workspace/key
+           rm /tmp/workspace/key
