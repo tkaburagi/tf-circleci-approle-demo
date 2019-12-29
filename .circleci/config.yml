@@ -82,7 +82,7 @@ jobs:
          name: "Send a Message to Vault Admin"
          command: |
            curl -X POST \
-           https://hooks.slack.com/services/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 \
+           ${SLACK_URL} \
            -H 'content-type: application/json' \
            -d '{
              "text": "Vault Init Token has been used just now. Please visit here to revoke it. https://cf-vault-kabu.cfapps.io/ui/vault/access/leases/list/auth/token/create/"
