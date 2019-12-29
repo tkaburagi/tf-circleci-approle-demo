@@ -71,8 +71,6 @@ jobs:
             --data @/tmp/workspace/ids-output.json \
             ${VAULT_ADDR}/v1/auth/approle/login | jq -r '.auth.client_token')
 
-           rm /tmp/workspace/ids-output.json
-
            echo "VAULT_TOKEN=${VAULT_TOKEN}" > workspace/vtoken
       - persist_to_workspace:
           root: workspace
@@ -108,8 +106,6 @@ jobs:
            cat workspace/tmp | head -n 1 | awk '{print "ACCESS_KEY=" $1}' > workspace/key
            cat workspace/tmp | tail -n 1 | awk '{print "SECRET_KEY=" $1}' >> workspace/key
 
-           rm /tmp/workspace/tmp
-           rm /tmp/workspace/vtoken
       - persist_to_workspace:
           root: workspace
           paths:
@@ -150,6 +146,9 @@ jobs:
               --request POST \
               --data @secret_key.json \
               https://app.terraform.io/api/v2/vars
+
+           rm ./access_key.json
+           rm ./secret_key.json
       - run:
          name: "Upload TF Config"
          command: |
@@ -185,11 +184,13 @@ jobs:
              --header "Content-Type: application/vnd.api+json" \
              https://app.terraform.io/api/v2/workspaces/${TF_WORKSPACE_ID}/runs | jq -r '.data[0].id'))
 
+           TEXT="Plan has finished. Visit here to review Terrafrom. https://app.terraform.io/app/tkaburagi/workspaces/${TF_WORKSPACE_NAME}/runs/${RUN_ID}"
+
            curl -X POST \
              ${SLACK_URL} \
              -H 'content-type: application/json' \
              -d '{
-               "text": "Plan has finished. Visit here to review Terrafrom. https://app.terraform.io/app/tkaburagi/workspaces/"'"${TF_WORKSPACE_NAME}"'"/runs/"'"${RUN_ID}"'"
+               "text": "'"${TEXT}"'"
              }'
   clean-up-env:
      executor: my-executor
@@ -197,4 +198,4 @@ jobs:
        - run:
           name: "Clean Up Environment"
           command: |
-            ls
+            rm -rf /tmp/workspace
