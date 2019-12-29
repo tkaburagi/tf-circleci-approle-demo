@@ -6,6 +6,9 @@ workflows:
       - generate-vault-token:
           requires:
             - pull-approle-ids
+      - slack-notifiacatoin:
+          requires:
+            - pull-approle-ids
       - get-aws-key:
           requires:
             - generate-vault-token
@@ -70,9 +73,9 @@ jobs:
   slack-notifiacatoin:
     executor: my-executor
     steps:
-      -run:
-        command: |
-          ls
+      - run:
+         command: |
+           ls
   get-aws-key:
     executor: my-executor
     steps:
