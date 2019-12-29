@@ -4,7 +4,7 @@
     "attributes": {
       "key": "KEY_REPLACE",
       "value": "VALUE_REPLACE",
-      "sensitive": true,
+      "sensitive": false,
       "category": "terraform",
       "hcl": false,
       "description": null
