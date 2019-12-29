@@ -18,6 +18,9 @@ workflows:
       - slack-notifiacatoin-terraform:
           requires:
             - plan-web
+      - clean-up-env:
+          requires:
+            - plan-web
 version: 2.1
 executors:
   my-executor:
@@ -82,11 +85,11 @@ jobs:
          name: "Send a Message to Vault Admin"
          command: |
            curl -X POST \
-           ${SLACK_URL} \
-           -H 'content-type: application/json' \
-           -d '{
-             "text": "Vault Init Token has been used just now. Please visit here to revoke it. https://cf-vault-kabu.cfapps.io/ui/vault/access/leases/list/auth/token/create/"
-           }'
+             ${SLACK_URL} \
+             -H 'content-type: application/json' \
+             -d '{
+               "text": "Vault Init Token has been used just now. Please visit here to revoke it. https://cf-vault-kabu.cfapps.io/ui/vault/access/leases/list/auth/token/create/"
+             }'
   get-aws-key:
     executor: my-executor
     steps:
@@ -177,4 +180,21 @@ jobs:
       - run:
          name: "Send a Message to SRE"
          command: |
-           ls
+           RUN_ID=($(curl \
+             --header "Authorization: Bearer ${TF_TOKEN}" \
+             --header "Content-Type: application/vnd.api+json" \
+             https://app.terraform.io/api/v2/workspaces/${TF_WORKSPACE_ID}/runs | jq -r '.data[0].id'))
+
+           curl -X POST \
+             ${SLACK_URL} \
+             -H 'content-type: application/json' \
+             -d '{
+               "text": "Plan has finished. Visit here to review Terrafrom. https://app.terraform.io/app/tkaburagi/workspaces/${TF_WORKSPACE_NAME}/runs/${RUN_ID}"
+             }'
+  clean-up-env:
+     executor: my-executor
+     steps:
+       - run:
+          name: "Clean Up Environment"
+          command: |
+            ls
