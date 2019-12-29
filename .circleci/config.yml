@@ -81,7 +81,12 @@ jobs:
       - run:
          name: "Send a Message to Vault Admin"
          command: |
-           ls
+           curl -X POST \
+           https://hooks.slack.com/services/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 \
+           -H 'content-type: application/json' \
+           -d '{
+             "text": "Vault Init Token has been used just now. Please visit here to revoke it. https://cf-vault-kabu.cfapps.io/ui/vault/access/leases/list/auth/token/create/"
+           }'
   get-aws-key:
     executor: my-executor
     steps:
