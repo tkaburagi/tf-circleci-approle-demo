@@ -2,7 +2,7 @@ variable "access_key" {}
 variable "secret_key" {}
 
 variable "web_instance_count" {
-  default = 4
+  default = 2
 }
 
 

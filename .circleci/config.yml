@@ -189,7 +189,7 @@ jobs:
              ${SLACK_URL} \
              -H 'content-type: application/json' \
              -d '{
-               "text": "Plan has finished. Visit here to review Terrafrom. https://app.terraform.io/app/tkaburagi/workspaces/${TF_WORKSPACE_NAME}/runs/${RUN_ID}"
+               "text": "Plan has finished. Visit here to review Terrafrom. https://app.terraform.io/app/tkaburagi/workspaces/"'"${TF_WORKSPACE_NAME}"'"/runs/"'"${RUN_ID}"'"
              }'
   clean-up-env:
      executor: my-executor
