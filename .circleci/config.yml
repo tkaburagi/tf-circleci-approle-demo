@@ -30,6 +30,7 @@ jobs:
     steps:
       - run: mkdir -p workspace
       - run: 
+         name: "Pull Approle Secret ID & Role ID"
          command: |
            echo 'export ROLE_ID=$(curl \
            --header "X-Vault-Token: ${VAULT_INIT_TOKEN}" \
@@ -58,6 +59,7 @@ jobs:
       - attach_workspace:
           at: /tmp/workspace
       - run:
+         name: "Login with AppRole and Get Vault Token"
          command: |
            cat /tmp/workspace/ids-output.json
 
@@ -77,6 +79,7 @@ jobs:
     executor: my-executor
     steps:
       - run:
+         name: "Send a Message to Vault Admin"
          command: |
            ls
   get-aws-key:
@@ -85,6 +88,7 @@ jobs:
       - attach_workspace:
           at: /tmp/workspace
       - run:
+         name: "Get AWS Key via Vault"
          command: |
            source workspace/vtoken
            echo ${VAULT_TOKEN}
@@ -110,6 +114,31 @@ jobs:
       - attach_workspace:
           at: /tmp/workspace
       - run:
+         name: "Set AWS Key in the Variables Storage"
+         command: |
+           source workspace/key
+           sed -i -e 's/WS_ID_REPLACE/${TF_WORKSPACE_ID}/g' var-template.json
+           sed 's/KEY_REPLACE/access_key/g' var-template.json > access_key.json
+           sed 's/KEY_REPLACE/secret_key/g' var-template.json > secret_key.json
+
+           sed -i -e 's/VALUE_REPLACE/${ACCESS_KEY}/g' access_key.json
+           sed -i -e 's/VALUE_REPLACE/${SECRET_KEY}/g' secret_key.json
+
+           curl \
+              --header "Authorization: Bearer ${TF_TOKEN}" \
+              --header "Content-Type: application/vnd.api+json" \
+              --request POST \
+              --data @access_key.json \
+              https://app.terraform.io/api/v2/vars
+
+           curl \
+              --header "Authorization: Bearer ${TF_TOKEN}" \
+              --header "Content-Type: application/vnd.api+json" \
+              --request POST \
+              --data @secret_key.json \
+              https://app.terraform.io/api/v2/vars
+      - run:
+         name: "Upload TF Config"
          command: |
            ls -ltrR
            tar -zcvf tf.tar.gz -C . main.tf output.tf variables.tf
@@ -132,12 +161,10 @@ jobs:
 
            rm ./create_config_version.json
            rm ./tf.tar.gz
-      - run:
-         command: |
-           pwd
   slack-notifiacatoin-terraform:
     executor: my-executor
     steps:
       - run:
+         name: "Send a Message to SRE"
          command: |
            ls
