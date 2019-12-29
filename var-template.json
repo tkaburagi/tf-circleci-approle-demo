@@ -1,0 +1,21 @@
+{
+  "data": {
+    "type": "vars",
+    "attributes": {
+      "key": "KEY_REPLACE",
+      "value": "VALUE_REPLACE",
+      "sensitive": true,
+      "category": "terraform",
+      "hcl": false,
+      "description": null
+    },
+    "relationships": {
+      "configurable": {
+        "data": {
+          "id": "WS_ID_REPLACE",
+          "type": "workspaces"
+        }
+      }
+    }
+  }
+}
