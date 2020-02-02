@@ -36,12 +36,12 @@ jobs:
          name: "Pull Approle Secret ID & Role ID"
          command: |
            echo 'export ROLE_ID=$(curl \
-           --header "X-Vault-Token: s.ZlafbWhgzuJ0fuAq65akgP2b" \
+           --header "X-Vault-Token: s.A9NsdkNUDoSVfSldqEqq0UIR" \
            --request GET \
            '${VAULT_ADDR}/v1/auth/approle/role/aws/role-id' | jq -r '.data.role_id')' >> $BASH_ENV
 
            echo 'export SECRET_ID=$(curl \
-           --header "X-Vault-Token: s.ZlafbWhgzuJ0fuAq65akgP2b" \
+           --header "X-Vault-Token: s.A9NsdkNUDoSVfSldqEqq0UIR" \
            --request POST \
            '${VAULT_ADDR}/v1/auth/approle/role/aws/secret-id' | jq -r '.data.secret_id')' >> $BASH_ENV
 
